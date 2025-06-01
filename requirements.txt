@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+pydantic
+pymongo # For MongoDB integration (required by tests and app)
+
+# Auth dependencies
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+
+# For environment variable management, if you use .env files
+# python-dotenv
+
+# Testing dependencies
+pytest
+httpx # Required by TestClient
