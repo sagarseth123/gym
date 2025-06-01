@@ -1,15 +1,17 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client'; // Import createRoot
-import './index.css'; // Ensure your global styles are imported
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom'; // Import BrowserRouter
+import './index.css';
 import App from './App';
-// import reportWebVitals from './reportWebVitals'; // Optional: if you want to use it
 
 const container = document.getElementById('root');
-const root = createRoot(container); // Create a root.
+const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter> {/* Wrap App with BrowserRouter */}
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
 

@@ -16,3 +16,92 @@
 .App-link {
   color: #61dafb;
 }
+
+/* Styles for Signup and Login Pages */
+.signup-page-container, .login-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.signup-page-container form, .login-page-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9; /* Added a light background for the form */
+}
+
+.signup-page-container label, .login-page-container label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-weight: bold; /* Made labels bold */
+  text-align: left; /* Aligned labels to the left */
+}
+
+.signup-page-container input, .login-page-container input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.signup-page-container button, .login-page-container button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px; /* Increased button font size */
+}
+
+.signup-page-container button:hover, .login-page-container button:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  padding: 10px; /* Added padding */
+  border: 1px solid red; /* Added border */
+  border-radius: 3px; /* Added border-radius */
+  background-color: #ffebeb; /* Added light red background */
+}
+.success-message {
+  color: green;
+  margin-top: 10px;
+  padding: 10px; /* Added padding */
+  border: 1px solid green; /* Added border */
+  border-radius: 3px; /* Added border-radius */
+  background-color: #e6ffed; /* Added light green background */
+}
+
+/* Basic Nav styling */
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Spacing between nav items */
+  background-color: #f0f0f0; /* Light background for nav bar */
+  padding: 10px 0; /* Padding around nav bar */
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+hr {
+  margin: 20px 0; /* Added margin to the hr for separation */
+}
