@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminLogin } from '../../services/api'; // Import the API service function
+import { adminLogin } from '../services/api.js'; // Corrected import path
 // Styles are assumed to be in App.css from previous step
 
 const AdminLoginPage = () => {
