@@ -1,6 +1,14 @@
 from fastapi import FastAPI
-from app.database import connect_to_mongo, close_mongo_connection # Updated import
-from app.routers import auth, gym_admin # Import the auth and gym_admin routers
+from fastapi.middleware.cors import CORSMiddleware # Import CORSMiddleware
+from app.database import connect_to_mongo, close_mongo_connection
+from app.routers import auth, gym_admin
+
+# Define allowed origins for CORS
+origins = [
+    "http://localhost:3000",  # Default for Create React App
+    # "http://localhost:3001", # Another example if your frontend runs elsewhere
+    # "https://your-deployed-frontend.com", # Example for production
+]
 
 app = FastAPI(
     title="Gym Management API",
@@ -19,6 +27,15 @@ It features robust authentication and role-based access control.
 
 Built with FastAPI and MongoDB.
     """
+)
+
+# Add CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True, # Allows cookies / auth headers, important for some auth flows
+    allow_methods=["*"],    # Allows all standard methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],    # Allows all headers
 )
 
 @app.on_event("startup")
