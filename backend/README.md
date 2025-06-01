@@ -4,28 +4,36 @@ This directory contains the FastAPI application for the Gym Management Platform.
 
 ## Setup and Running
 
-1.  **Create a virtual environment (recommended):**
+1.  **Navigate to the `backend` directory (if you are not already there):**
     ```bash
-    python -m venv venv
+    cd path/to/your_project/backend
+    ```
+    *(Ensure your terminal's current working directory is the `backend` folder that contains `app` and `requirements.txt`)*
+
+2.  **Create a virtual environment (recommended, if not already done):**
+    From within the `backend` directory:
+    ```bash
+    python3 -m venv venv  # Or python -m venv venv
     source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     ```
 
-2.  **Install dependencies:**
+3.  **Install dependencies (if not already done):**
+    From within the `backend` directory (with virtual environment activated):
     ```bash
     pip install -r requirements.txt
     ```
 
-3.  **Configure MongoDB:**
+4.  **Configure MongoDB:**
     - Ensure you have a MongoDB instance running.
-    - Update the `MONGO_DETAILS` in `app/database.py` with your MongoDB connection string and desired database name.
-      (Ideally, this will be moved to environment variables later).
+    - **Crucially, ensure `MONGO_DETAILS` and `DB_NAME` in `app/database.py` are correctly set to your MongoDB connection string and desired database name.** You can edit the file directly or set them as environment variables (e.g., `export MONGO_DETAILS="your_uri"` `export DB_NAME="your_db"`) before running the server. Remember to replace placeholder values.
 
-4.  **Run the application:**
-    Navigate to the `backend/app` directory (where `main.py` is located).
+5.  **Run the application:**
+    From within the `backend` directory (with virtual environment activated):
     ```bash
-    cd app
-    uvicorn main:app --reload
+    python -m uvicorn app.main:app --reload
     ```
+    This command tells Python to run Uvicorn as a module, looking for the `app` object within the `app.main` module (i.e., `backend/app/main.py`).
+
     The application will be available at `http://127.0.0.1:8000`. You can access the API docs at `http://127.0.0.1:8000/docs`.
 
 ## Project Structure
