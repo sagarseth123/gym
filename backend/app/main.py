@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from .database import connect_and_ping_db # Import the function
+from database import connect_and_ping_db # Import the function
+# from app.database import connect_and_ping_db
 
 app = FastAPI()
 
