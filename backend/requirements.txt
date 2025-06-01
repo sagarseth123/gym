@@ -2,3 +2,8 @@ fastapi
 uvicorn[standard]
 pydantic
 pymongo
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+pytest
+httpx
