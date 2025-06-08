@@ -67,7 +67,7 @@ async def signup_admin(user: UserCreate, db: Any = Depends(get_db_session)):
     )
 
     try:
-        created_user = create_user(db=db, user_create_data=user_to_create, role=UserRole.admin)
+        created_user = create_user(db=db, user_data=user_to_create, role=UserRole.admin) # Changed user_create_data to user_data
         # UserPublic model will be used by FastAPI based on response_model
         return created_user
     except ValueError as e:
@@ -168,7 +168,7 @@ async def google_callback(code: str = None, error: str = None, db: Any = Depends
             is_active=True
         )
         # Ensure role is passed as UserRole enum or string value
-        user = create_user(db=db, user_create_data=new_user_data, role=UserRole.user)
+        user = create_user(db=db, user_data=new_user_data, role=UserRole.user) # Changed user_create_data to user_data
 
     # 4. Create access token for your application
     access_token = create_access_token(
