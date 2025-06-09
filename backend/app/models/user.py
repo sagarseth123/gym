@@ -39,11 +39,11 @@ class UserInDB(UserBase):
 
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True # For Pydantic v2
+        populate_by_name = True # Replaces allow_population_by_field_name for Pydantic v2
+        arbitrary_types_allowed = True
         json_encoders = {
             datetime: lambda dt: dt.isoformat(),
-            # ObjectId: str # Already handled by str alias in Pydantic
         }
 
 class UserPublic(BaseModel): # What's safe to return to clients

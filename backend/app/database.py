@@ -76,6 +76,8 @@ def create_user(db: PyMongoDatabase, user_data: UserCreate, role: UserRole) -> U
     result = db[USER_COLLECTION].insert_one(user_doc)
     created_doc = db[USER_COLLECTION].find_one({"_id": result.inserted_id})
     if created_doc:
+        if '_id' in created_doc and isinstance(created_doc['_id'], ObjectId):
+            created_doc['_id'] = str(created_doc['_id'])
         return UserInDB(**created_doc)
     raise Exception("Failed to create user or retrieve after creation.")
 
@@ -83,6 +85,8 @@ def create_user(db: PyMongoDatabase, user_data: UserCreate, role: UserRole) -> U
 def get_user_by_email(db: PyMongoDatabase, email: str) -> Optional[UserInDB]:
     user_doc = db[USER_COLLECTION].find_one({"email": email})
     if user_doc:
+        if '_id' in user_doc and isinstance(user_doc['_id'], ObjectId):
+            user_doc['_id'] = str(user_doc['_id'])
         return UserInDB(**user_doc)
     return None
 
@@ -91,6 +95,8 @@ def get_user_by_id(db: PyMongoDatabase, user_id: str) -> Optional[UserInDB]:
         oid = validate_object_id(user_id)
         user_doc = db[USER_COLLECTION].find_one({"_id": oid})
         if user_doc:
+            if '_id' in user_doc and isinstance(user_doc['_id'], ObjectId):
+                user_doc['_id'] = str(user_doc['_id'])
             return UserInDB(**user_doc)
     except ValueError: # Invalid ObjectId string
         return None
@@ -108,6 +114,8 @@ def create_gym(db: PyMongoDatabase, gym_data: GymCreate) -> GymInDB:
     result = db[GYM_COLLECTION].insert_one(gym_doc)
     created_doc = db[GYM_COLLECTION].find_one({"_id": result.inserted_id})
     if created_doc:
+        if '_id' in created_doc and isinstance(created_doc['_id'], ObjectId):
+            created_doc['_id'] = str(created_doc['_id'])
         return GymInDB(**created_doc)
     raise Exception("Failed to create gym or retrieve after creation.")
 
@@ -117,6 +125,8 @@ def get_gym_by_id(db: PyMongoDatabase, gym_id: str) -> Optional[GymInDB]:
         oid = validate_object_id(gym_id)
         gym_doc = db[GYM_COLLECTION].find_one({"_id": oid})
         if gym_doc:
+            if '_id' in gym_doc and isinstance(gym_doc['_id'], ObjectId):
+                gym_doc['_id'] = str(gym_doc['_id'])
             return GymInDB(**gym_doc)
     except ValueError:
         return None
@@ -134,6 +144,8 @@ def update_gym_details(db: PyMongoDatabase, gym_id: str, gym_update_data: GymUpd
             return_document=ReturnDocument.AFTER
         )
         if updated_doc:
+            if '_id' in updated_doc and isinstance(updated_doc['_id'], ObjectId):
+                updated_doc['_id'] = str(updated_doc['_id'])
             return GymInDB(**updated_doc)
     except ValueError:
         return None
@@ -161,19 +173,52 @@ def create_subscription(db: PyMongoDatabase, subscription_data: SubscriptionCrea
     result = db[SUBSCRIPTION_COLLECTION].insert_one(sub_doc)
     created_doc = db[SUBSCRIPTION_COLLECTION].find_one({"_id": result.inserted_id})
     if created_doc:
+        if '_id' in created_doc and isinstance(created_doc['_id'], ObjectId):
+            created_doc['_id'] = str(created_doc['_id'])
         return SubscriptionInDB(**created_doc)
     raise Exception("Failed to create subscription or retrieve after creation.")
 
 def get_subscriptions_by_gym_id(db: PyMongoDatabase, gym_id: str) -> List[SubscriptionInDB]:
-    # Assuming gym_id in Subscription model is a string that could be an ObjectId string or other gym identifier
-    # If gym_id in subscriptions collection is stored as ObjectId, this query needs adjustment.
-    # For now, assume it's stored as the string version of the Gym's ObjectId or another string key.
-    # The GymInDB model has id as string, so gym.id will be string.
+    results = []
     subscriptions_cursor = db[SUBSCRIPTION_COLLECTION].find({"gym_id": gym_id})
-    return [SubscriptionInDB(**sub_doc) for sub_doc in subscriptions_cursor]
+    for sub_doc in subscriptions_cursor:
+        if '_id' in sub_doc and isinstance(sub_doc['_id'], ObjectId):
+            sub_doc['_id'] = str(sub_doc['_id'])
+        results.append(SubscriptionInDB(**sub_doc))
+    return results
 
 # Note on ObjectId handling in Pydantic models:
-# UserInDB, GymInDB, SubscriptionInDB all have:
+# UserInDB, GymInDB, SubscriptionInDB models have `id: str = Field(..., alias="_id")`
+# and their Config class includes `populate_by_name = True` and `arbitrary_types_allowed = True`.
+# This setup *should* inherently handle the conversion of `ObjectId` to `str` when data is loaded
+# into the Pydantic model from a dictionary where `_id` is an `ObjectId`.
+# The explicit conversions added in this step are a defensive measure to ensure
+# that the dictionary passed to the Pydantic model constructor (e.g., `UserInDB(**user_doc)`)
+# has `_id` as a string, removing any ambiguity or reliance on Pydantic's internal conversion order
+# or specific version behavior for this transformation, especially when `arbitrary_types_allowed`
+# might affect how Pydantic treats unknown types before aliasing and standard type coercion.
+# This makes the data preparation step more explicit.
+#
+# The `validate_object_id` helper is used for converting string IDs from API paths/requests
+# back to ObjectId for querying the database, which is the reverse scenario.
+
+# Ensure all router dependencies for DB are updated to pass `PyMongoDatabase` instance.
+# The `get_db()` function now returns `PyMongoDatabase`.
+# The `Depends(get_db_session)` in routers needs to provide this.
+# The `get_db_session` in routers was a placeholder; it calls `get_db()`. This should align.
+# If `get_db_session` is async, but `get_db` is sync, it's okay for now.
+# A true async setup would use an async MongoDB driver (e.g., Motor) and async def for DB functions.
+# This subtask focuses on replacing placeholders with PyMongo (sync) logic.
+# The `Any` type hint for `db` in old placeholder functions will now be `PyMongoDatabase`.
+# Routers using `db: Any = Depends(get_db_session)` will have `get_db_session` provide `PyMongoDatabase`.
+
+# The prepopulation functions (_prepopulate_users, _prepopulate_subscriptions_and_gyms)
+# and the fake stores (_FAKE_USER_DB_STORE, etc.) are now removed.
+# Testing will require manual data insertion or API calls.
+# Renamed placeholder functions in routers need to be updated (e.g. get_user_by_id_placeholder -> get_user_by_id)
+# This will be done in the next step.
+# For this step, the database.py file itself is the focus.
+print("Database module (database.py) reloaded with MongoDB implementations.")
 #   id: str = Field(..., alias="_id")
 # And in their Config:
 #   allow_population_by_field_name = True
